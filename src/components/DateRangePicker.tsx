@@ -1,6 +1,6 @@
 
 import React from "react";
-import { format } from "date-fns";
+import { format, endOfMonth, startOfMonth, addMonths } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,28 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   onStartDateChange,
   onEndDateChange,
 }) => {
+  // Quick selection handlers for start date
+  const handleSelectToday = () => {
+    onStartDateChange(new Date());
+  };
+
+  const handleSelectFirstOfMonth = () => {
+    onStartDateChange(startOfMonth(new Date()));
+  };
+
+  const handleSelectFirstOfNextMonth = () => {
+    onStartDateChange(startOfMonth(addMonths(new Date(), 1)));
+  };
+
+  // Quick selection handlers for end date
+  const handleSelectEndOfMonth = () => {
+    onEndDateChange(endOfMonth(new Date()));
+  };
+
+  const handleSelectEndOfNextMonth = () => {
+    onEndDateChange(endOfMonth(addMonths(new Date(), 1)));
+  };
+
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 animate-fade-up" style={{ animationDelay: "50ms" }}>
       <div className="space-y-2">
@@ -56,6 +78,34 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
             />
           </PopoverContent>
         </Popover>
+        
+        {/* Quick selection buttons for start date */}
+        <div className="flex flex-wrap gap-2 mt-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSelectToday}
+            className="text-xs"
+          >
+            Today
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSelectFirstOfMonth}
+            className="text-xs"
+          >
+            First of month
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSelectFirstOfNextMonth}
+            className="text-xs"
+          >
+            First of next month
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -87,6 +137,26 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
             />
           </PopoverContent>
         </Popover>
+        
+        {/* Quick selection buttons for end date */}
+        <div className="flex flex-wrap gap-2 mt-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSelectEndOfMonth}
+            className="text-xs"
+          >
+            End of month
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSelectEndOfNextMonth}
+            className="text-xs"
+          >
+            End of next month
+          </Button>
+        </div>
       </div>
     </div>
   );
