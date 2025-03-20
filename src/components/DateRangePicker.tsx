@@ -11,7 +11,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatDate } from "@/utils/dateUtils";
-import { Toggle } from "@/components/ui/toggle";
 
 interface DateRangePickerProps {
   startDate: Date | null;
@@ -82,30 +81,30 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         
         {/* Quick selection buttons for start date */}
         <div className="flex flex-wrap gap-2 mt-2">
-          <Toggle 
+          <Button 
             variant="outline" 
             size="sm" 
             onClick={handleSelectToday}
-            className="text-xs bg-muted/40 hover:bg-muted border-muted"
+            className="text-xs"
           >
             Today
-          </Toggle>
-          <Toggle 
+          </Button>
+          <Button 
             variant="outline" 
             size="sm" 
             onClick={handleSelectFirstOfMonth}
-            className="text-xs bg-muted/40 hover:bg-muted border-muted"
+            className="text-xs"
           >
             First of month
-          </Toggle>
-          <Toggle 
+          </Button>
+          <Button 
             variant="outline" 
             size="sm" 
             onClick={handleSelectFirstOfNextMonth}
-            className="text-xs bg-muted/40 hover:bg-muted border-muted"
+            className="text-xs"
           >
             First of next month
-          </Toggle>
+          </Button>
         </div>
       </div>
 
@@ -141,22 +140,22 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         
         {/* Quick selection buttons for end date */}
         <div className="flex flex-wrap gap-2 mt-2">
-          <Toggle 
+          <Button 
             variant="outline" 
             size="sm" 
             onClick={handleSelectEndOfMonth}
-            className="text-xs bg-muted/40 hover:bg-muted border-muted"
+            className="text-xs"
           >
             End of month
-          </Toggle>
-          <Toggle 
+          </Button>
+          <Button 
             variant="outline" 
             size="sm" 
             onClick={handleSelectEndOfNextMonth}
-            className="text-xs bg-muted/40 hover:bg-muted border-muted"
+            className="text-xs"
           >
             End of next month
-          </Toggle>
+          </Button>
         </div>
       </div>
     </div>
