@@ -21,6 +21,32 @@ export const calculateDailyBudget = (
 };
 
 /**
+ * Calculate adjusted daily budget based on intermediate date and spent amount
+ */
+export const calculateAdjustedDailyBudget = (
+  totalBudget: number,
+  startDate: Date,
+  endDate: Date,
+  intermediateDate: Date,
+  spentAmount: number
+): number => {
+  // Calculate the total campaign days
+  const totalDays = calculateDaysBetween(startDate, endDate);
+  
+  // Calculate days elapsed (including the intermediate date)
+  const daysElapsed = calculateDaysBetween(startDate, intermediateDate);
+  
+  // Calculate days remaining (excluding the intermediate date)
+  const daysRemaining = totalDays - daysElapsed;
+  
+  // Calculate the remaining budget
+  const remainingBudget = totalBudget - spentAmount;
+  
+  // Calculate the adjusted daily budget for remaining days
+  return daysRemaining > 0 ? remainingBudget / daysRemaining : 0;
+};
+
+/**
  * Format a date to display format
  */
 export const formatDate = (date: Date | null): string => {

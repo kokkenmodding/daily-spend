@@ -15,15 +15,19 @@ import { formatDate } from "@/utils/dateUtils";
 interface DateRangePickerProps {
   startDate: Date | null;
   endDate: Date | null;
+  intermediateDate: Date | null;
   onStartDateChange: (date: Date | null) => void;
   onEndDateChange: (date: Date | null) => void;
+  onIntermediateDateChange: (date: Date | null) => void;
 }
 
 const DateRangePicker: React.FC<DateRangePickerProps> = ({
   startDate,
   endDate,
+  intermediateDate,
   onStartDateChange,
   onEndDateChange,
+  onIntermediateDateChange,
 }) => {
   // Quick selection handlers for start date
   const handleSelectToday = () => {
@@ -73,7 +77,11 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
               selected={startDate || undefined}
               onSelect={onStartDateChange}
               initialFocus
-              disabled={(date) => endDate ? date > endDate : false}
+              disabled={(date) => {
+                if (intermediateDate && date > intermediateDate) return true;
+                if (endDate && date > endDate) return true;
+                return false;
+              }}
               className={cn("p-3 pointer-events-auto rounded-md border border-input bg-card shadow-md")}
             />
           </PopoverContent>
@@ -156,6 +164,45 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           >
             End of next month
           </Button>
+        </div>
+      </div>
+
+      {/* Intermediate date picker */}
+      <div className="space-y-2 md:col-span-2">
+        <label htmlFor="intermediate-date" className="block text-sm font-medium text-muted-foreground">
+          Intermediate Date (Optional)
+        </label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              id="intermediate-date"
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal transition-all-200 border-input bg-background hover:bg-accent",
+                !intermediateDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="w-4 h-4 mr-2" />
+              {intermediateDate ? formatDate(intermediateDate) : "Select intermediate date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={intermediateDate || undefined}
+              onSelect={onIntermediateDateChange}
+              initialFocus
+              disabled={(date) => {
+                if (startDate && date < startDate) return true;
+                if (endDate && date > endDate) return true;
+                return false;
+              }}
+              className={cn("p-3 pointer-events-auto rounded-md border border-input bg-card shadow-md")}
+            />
+          </PopoverContent>
+        </Popover>
+        <div className="text-xs text-muted-foreground">
+          Select a date to indicate your current progress in the campaign
         </div>
       </div>
     </div>
