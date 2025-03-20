@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { DollarSign } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface SpentAmountInputProps {
   value: number;
@@ -11,6 +12,7 @@ interface SpentAmountInputProps {
 
 const SpentAmountInput: React.FC<SpentAmountInputProps> = ({ value, onChange, isDisabled }) => {
   const [inputValue, setInputValue] = useState<string>(value > 0 ? value.toString() : "");
+  const { toast } = useToast();
 
   // Update the input value when the prop changes
   useEffect(() => {

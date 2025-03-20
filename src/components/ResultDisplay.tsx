@@ -42,7 +42,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
     ? calculateDaysBetween(startDate, intermediateDate) 
     : 0;
   const daysRemaining = (isDataComplete && intermediateDate) 
-    ? calculateDaysBetween(intermediateDate, endDate) 
+    ? days - daysElapsed + 1 // +1 because intermediate date is counted in both elapsed and remaining
     : days;
 
   return (
