@@ -7,6 +7,8 @@ import {
   formatCurrency 
 } from "@/utils/dateUtils";
 import { CalendarDays, Calendar, TrendingUp } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 interface ResultDisplayProps {
   totalBudget: number;
@@ -44,6 +46,51 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
   const daysRemaining = (isDataComplete && intermediateDate) 
     ? days - daysElapsed + 1 // +1 because intermediate date is counted in both elapsed and remaining
     : days;
+
+  // Calculate pacing metrics
+  const calculatePacing = () => {
+    if (!isDataComplete || !hasIntermediateData || !intermediateDate) return null;
+
+    // Calculate ideal spend based on days elapsed
+    const timeRatio = daysElapsed / days;
+    const idealSpend = totalBudget * timeRatio;
+    
+    // Calculate actual spend ratio
+    const spendRatio = spentAmount / totalBudget;
+    
+    // Calculate pacing percentage (how actual spend compares to ideal spend)
+    // 100% means perfect pacing, >100% means overspending, <100% means underspending
+    const pacingPercentage = (spendRatio / timeRatio) * 100;
+    
+    // Determine status based on how far off perfect pacing (100%)
+    let status = "on-track";
+    let statusColor = "bg-emerald-500";
+    let textColor = "text-emerald-700";
+    
+    const pacingDifference = Math.abs(100 - pacingPercentage);
+    
+    if (pacingDifference > 10) {
+      status = pacingPercentage > 100 ? "overspending" : "underspending";
+      statusColor = "bg-red-500";
+      textColor = "text-red-700";
+    } else if (pacingDifference > 5) {
+      status = pacingPercentage > 100 ? "slightly overspending" : "slightly underspending";
+      statusColor = "bg-amber-500";
+      textColor = "text-amber-700";
+    }
+    
+    return {
+      idealSpend,
+      pacingPercentage,
+      status,
+      statusColor,
+      textColor,
+      timeRatio,
+      spendRatio
+    };
+  };
+  
+  const pacing = calculatePacing();
 
   return (
     <div className="mt-8 overflow-hidden bg-card border border-border rounded-2xl shadow-sm animate-fade-up" style={{ animationDelay: "150ms" }}>
@@ -90,6 +137,68 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
             )}
           </div>
         </div>
+        
+        {/* Pacing Graph */}
+        {isDataComplete && hasIntermediateData && pacing && (
+          <div className="mt-6 p-4 bg-accent/30 rounded-xl">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <TrendingUp className="w-5 h-5 mr-2 text-primary" />
+                <span className="text-sm font-medium">Campaign Pacing</span>
+              </div>
+              <Badge 
+                className={`${pacing.textColor.replace('text-', 'bg-').replace('-700', '-100')} ${pacing.textColor}`}
+              >
+                {Math.round(pacing.pacingPercentage)}% of ideal
+              </Badge>
+            </div>
+            
+            <div className="mt-3 space-y-2">
+              {/* Pacing visualization */}
+              <div className="relative h-6 w-full bg-gray-100 rounded-full overflow-hidden">
+                {/* Middle marker for 100% pacing */}
+                <div className="absolute top-0 bottom-0 left-1/2 w-px bg-gray-300 z-10"></div>
+                
+                {/* Progress bar for pacing */}
+                <div 
+                  className={`h-full transition-all ${pacing.statusColor}`}
+                  style={{ width: `${Math.min(Math.max(pacing.pacingPercentage, 0), 200)}%` }}
+                ></div>
+                
+                {/* Indicator positions */}
+                <div className="absolute top-0 bottom-0 left-[45%] w-px bg-gray-300 z-10 h-2"></div>
+                <div className="absolute top-0 bottom-0 left-[55%] w-px bg-gray-300 z-10 h-2"></div>
+                <div className="absolute top-0 bottom-0 left-[40%] w-px bg-gray-300 z-10 h-2"></div>
+                <div className="absolute top-0 bottom-0 left-[60%] w-px bg-gray-300 z-10 h-2"></div>
+              </div>
+              
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Underspending</span>
+                <span>On Track</span>
+                <span>Overspending</span>
+              </div>
+              
+              <div className="pt-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Time elapsed:</span>
+                  <span>{Math.round(pacing.timeRatio * 100)}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Budget spent:</span>
+                  <span>{Math.round(pacing.spendRatio * 100)}%</span>
+                </div>
+                <div className="flex justify-between mt-1">
+                  <span>Ideal spend to date:</span>
+                  <span>{formatCurrency(pacing.idealSpend)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Actual spend to date:</span>
+                  <span>{formatCurrency(spentAmount)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         {isDataComplete && !hasIntermediateData && (
           <div className="mt-6 text-sm text-muted-foreground">
