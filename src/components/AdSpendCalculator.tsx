@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from "react";
 import DateRangePicker from "./DateRangePicker";
 import BudgetInput from "./BudgetInput";
 import SpentAmountInput from "./SpentAmountInput";
 import ResultDisplay from "./ResultDisplay";
 import CalculatorHeader from "./CalculatorHeader";
-import { startOfMonth, endOfMonth } from "date-fns";
+import { startOfMonth, endOfMonth, subDays } from "date-fns";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -17,7 +18,7 @@ import { formatDate } from "@/utils/dateUtils";
 const AdSpendCalculator: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState<Date | null>(endOfMonth(new Date()));
-  const [intermediateDate, setIntermediateDate] = useState<Date | null>(null);
+  const [intermediateDate, setIntermediateDate] = useState<Date | null>(subDays(new Date(), 1));
   const [totalBudget, setTotalBudget] = useState<number>(1000);
   const [spentAmount, setSpentAmount] = useState<number>(0);
   const [showIntermediate, setShowIntermediate] = useState<boolean>(false);
@@ -96,6 +97,17 @@ const AdSpendCalculator: React.FC = () => {
     setShowIntermediate(value);
     if (!value) {
       setIntermediateDate(null);
+    } else {
+      // Set default intermediate date to yesterday when toggle is turned on
+      const yesterday = subDays(new Date(), 1);
+      if (!intermediateDate || 
+          (startDate && yesterday < startDate) ||
+          (endDate && yesterday > endDate)) {
+        // If yesterday is outside the selected date range, use the start date
+        setIntermediateDate(startDate);
+      } else {
+        setIntermediateDate(yesterday);
+      }
     }
   };
 
@@ -134,11 +146,11 @@ const AdSpendCalculator: React.FC = () => {
                 Track current progress
               </label>
             </div>
-            <Separator className="w-full" />
+            <Separator className="w-full mt-2" />
           </div>
 
           {showIntermediate && (
-            <div className="space-y-2 pl-2 border-l-2 border-muted/40 py-2">
+            <div className="space-y-2 mt-4">
               <label htmlFor="intermediate-date" className="block text-sm font-medium text-muted-foreground">
                 Intermediate Date
               </label>

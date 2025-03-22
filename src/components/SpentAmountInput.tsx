@@ -56,9 +56,9 @@ const SpentAmountInput: React.FC<SpentAmountInputProps> = ({ value, onChange, is
         />
       </div>
       {isDisabled && (
-        <p className="text-xs text-muted-foreground">
+        <div className="text-xs text-muted-foreground">
           Select an intermediate date to track your spending
-        </p>
+        </div>
       )}
     </div>
   );
