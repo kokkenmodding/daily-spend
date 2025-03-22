@@ -37,7 +37,7 @@ const SpentAmountInput: React.FC<SpentAmountInputProps> = ({ value, onChange, is
   };
 
   return (
-    <div className="space-y-2 animate-fade-up" style={{ animationDelay: "125ms" }}>
+    <div className="space-y-2 animate-fade-up pl-2 border-l-2 border-muted/40 py-2" style={{ animationDelay: "125ms" }}>
       <label htmlFor="spent-amount" className="block text-sm font-medium text-muted-foreground">
         Amount Spent So Far
       </label>

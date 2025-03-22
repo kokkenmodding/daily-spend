@@ -5,21 +5,22 @@ import BudgetInput from "./BudgetInput";
 import SpentAmountInput from "./SpentAmountInput";
 import ResultDisplay from "./ResultDisplay";
 import CalculatorHeader from "./CalculatorHeader";
-import { addDays } from "date-fns";
+import { startOfMonth, endOfMonth } from "date-fns";
 
 const AdSpendCalculator: React.FC = () => {
-  const [startDate, setStartDate] = useState<Date | null>(new Date());
-  const [endDate, setEndDate] = useState<Date | null>(addDays(new Date(), 7));
+  const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date()));
+  const [endDate, setEndDate] = useState<Date | null>(endOfMonth(new Date()));
   const [intermediateDate, setIntermediateDate] = useState<Date | null>(null);
   const [totalBudget, setTotalBudget] = useState<number>(1000);
   const [spentAmount, setSpentAmount] = useState<number>(0);
+  const [showIntermediate, setShowIntermediate] = useState<boolean>(false);
 
   // Reset spent amount when intermediate date is removed
   useEffect(() => {
-    if (!intermediateDate) {
+    if (!intermediateDate || !showIntermediate) {
       setSpentAmount(0);
     }
-  }, [intermediateDate]);
+  }, [intermediateDate, showIntermediate]);
 
   // Ensure spent amount doesn't exceed total budget
   useEffect(() => {
@@ -73,6 +74,13 @@ const AdSpendCalculator: React.FC = () => {
     setSpentAmount(value);
   };
 
+  const handleToggleIntermediate = (value: boolean) => {
+    setShowIntermediate(value);
+    if (!value) {
+      setIntermediateDate(null);
+    }
+  };
+
   return (
     <div className="w-full max-w-3xl p-6 mx-auto">
       <CalculatorHeader />
@@ -85,6 +93,8 @@ const AdSpendCalculator: React.FC = () => {
           onStartDateChange={handleStartDateChange}
           onEndDateChange={handleEndDateChange}
           onIntermediateDateChange={handleIntermediateDateChange}
+          showIntermediate={showIntermediate}
+          onToggleIntermediate={handleToggleIntermediate}
         />
         
         <BudgetInput 
@@ -92,17 +102,19 @@ const AdSpendCalculator: React.FC = () => {
           onChange={handleBudgetChange} 
         />
         
-        <SpentAmountInput 
-          value={spentAmount}
-          onChange={handleSpentAmountChange}
-          isDisabled={!intermediateDate}
-        />
+        {showIntermediate && (
+          <SpentAmountInput 
+            value={spentAmount}
+            onChange={handleSpentAmountChange}
+            isDisabled={!intermediateDate}
+          />
+        )}
         
         <ResultDisplay
           totalBudget={totalBudget}
           startDate={startDate}
           endDate={endDate}
-          intermediateDate={intermediateDate}
+          intermediateDate={showIntermediate ? intermediateDate : null}
           spentAmount={spentAmount}
         />
       </div>
