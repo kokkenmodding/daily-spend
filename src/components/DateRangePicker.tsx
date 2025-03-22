@@ -23,6 +23,7 @@ interface DateRangePickerProps {
   onIntermediateDateChange: (date: Date | null) => void;
   showIntermediate: boolean;
   onToggleIntermediate: (value: boolean) => void;
+  onSetDateRange: (startDate: Date, endDate: Date) => void;
 }
 
 const DateRangePicker: React.FC<DateRangePickerProps> = ({
@@ -34,27 +35,26 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   onIntermediateDateChange,
   showIntermediate,
   onToggleIntermediate,
+  onSetDateRange,
 }) => {
-  // Quick selection handlers for start date
-  const handleSelectFirstOfMonth = () => {
-    onStartDateChange(startOfMonth(new Date()));
+  // Quick selection handlers for combined date ranges
+  const handleSelectThisMonth = () => {
+    const start = startOfMonth(new Date());
+    const end = endOfMonth(new Date());
+    onSetDateRange(start, end);
   };
 
-  const handleSelectFirstOfNextMonth = () => {
-    onStartDateChange(startOfMonth(addMonths(new Date(), 1)));
-  };
-  
-  const handleSelectToday = () => {
-    onStartDateChange(new Date());
-  };
-
-  // Quick selection handlers for end date
-  const handleSelectEndOfMonth = () => {
-    onEndDateChange(endOfMonth(new Date()));
+  const handleSelectNextMonth = () => {
+    const nextMonth = addMonths(new Date(), 1);
+    const start = startOfMonth(nextMonth);
+    const end = endOfMonth(nextMonth);
+    onSetDateRange(start, end);
   };
 
-  const handleSelectEndOfNextMonth = () => {
-    onEndDateChange(endOfMonth(addMonths(new Date(), 1)));
+  const handleSelectTodayToEOM = () => {
+    const today = new Date();
+    const end = endOfMonth(today);
+    onSetDateRange(today, end);
   };
 
   return (
@@ -93,34 +93,6 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
               />
             </PopoverContent>
           </Popover>
-          
-          {/* Quick selection buttons for start date */}
-          <div className="flex flex-wrap gap-2 mt-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleSelectFirstOfMonth}
-              className="text-xs"
-            >
-              First of month
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleSelectFirstOfNextMonth}
-              className="text-xs"
-            >
-              First of next month
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleSelectToday}
-              className="text-xs"
-            >
-              Today
-            </Button>
-          </div>
         </div>
 
         <div className="space-y-2">
@@ -152,84 +124,35 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
               />
             </PopoverContent>
           </Popover>
-          
-          {/* Quick selection buttons for end date */}
-          <div className="flex flex-wrap gap-2 mt-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleSelectEndOfMonth}
-              className="text-xs"
-            >
-              End of month
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleSelectEndOfNextMonth}
-              className="text-xs"
-            >
-              End of next month
-            </Button>
-          </div>
         </div>
       </div>
 
-      {/* Intermediate date section with toggle */}
-      <div className="mt-6 pt-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Switch 
-              id="intermediate-toggle" 
-              checked={showIntermediate}
-              onCheckedChange={onToggleIntermediate}
-            />
-            <label htmlFor="intermediate-toggle" className="text-sm font-medium">
-              Track current progress
-            </label>
-          </div>
-          <Separator className="grow mx-4" />
-        </div>
-
-        {showIntermediate && (
-          <div className="space-y-2 pl-2 border-l-2 border-muted/40 py-2">
-            <label htmlFor="intermediate-date" className="block text-sm font-medium text-muted-foreground">
-              Intermediate Date
-            </label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="intermediate-date"
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal transition-all-200 border-input bg-background hover:bg-accent",
-                    !intermediateDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="w-4 h-4 mr-2" />
-                  {intermediateDate ? formatDate(intermediateDate) : "Select intermediate date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={intermediateDate || undefined}
-                  onSelect={onIntermediateDateChange}
-                  initialFocus
-                  disabled={(date) => {
-                    if (startDate && date < startDate) return true;
-                    if (endDate && date > endDate) return true;
-                    return false;
-                  }}
-                  className={cn("p-3 pointer-events-auto rounded-md border border-input bg-card shadow-md")}
-                />
-              </PopoverContent>
-            </Popover>
-            <div className="text-xs text-muted-foreground">
-              Select a date to indicate your current progress in the campaign
-            </div>
-          </div>
-        )}
+      {/* Quick range selection buttons */}
+      <div className="flex flex-wrap gap-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleSelectThisMonth}
+          className="text-xs"
+        >
+          This month
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleSelectNextMonth}
+          className="text-xs"
+        >
+          Next month
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleSelectTodayToEOM}
+          className="text-xs"
+        >
+          Today to EOM
+        </Button>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import DateRangePicker from "./DateRangePicker";
 import BudgetInput from "./BudgetInput";
@@ -6,6 +5,14 @@ import SpentAmountInput from "./SpentAmountInput";
 import ResultDisplay from "./ResultDisplay";
 import CalculatorHeader from "./CalculatorHeader";
 import { startOfMonth, endOfMonth } from "date-fns";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { formatDate } from "@/utils/dateUtils";
 
 const AdSpendCalculator: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date()));
@@ -66,6 +73,17 @@ const AdSpendCalculator: React.FC = () => {
     }
   };
 
+  const handleSetDateRange = (start: Date, end: Date) => {
+    setStartDate(start);
+    setEndDate(end);
+    
+    // If intermediate date is outside the new range, reset it
+    if (intermediateDate && (intermediateDate < start || intermediateDate > end)) {
+      setIntermediateDate(null);
+      setSpentAmount(0);
+    }
+  };
+
   const handleBudgetChange = (value: number) => {
     setTotalBudget(value);
   };
@@ -95,6 +113,7 @@ const AdSpendCalculator: React.FC = () => {
           onIntermediateDateChange={handleIntermediateDateChange}
           showIntermediate={showIntermediate}
           onToggleIntermediate={handleToggleIntermediate}
+          onSetDateRange={handleSetDateRange}
         />
         
         <BudgetInput 
@@ -102,13 +121,70 @@ const AdSpendCalculator: React.FC = () => {
           onChange={handleBudgetChange} 
         />
         
-        {showIntermediate && (
-          <SpentAmountInput 
-            value={spentAmount}
-            onChange={handleSpentAmountChange}
-            isDisabled={!intermediateDate}
-          />
-        )}
+        {/* Intermediate date toggle and section */}
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Switch 
+                id="intermediate-toggle" 
+                checked={showIntermediate}
+                onCheckedChange={handleToggleIntermediate}
+              />
+              <label htmlFor="intermediate-toggle" className="text-sm font-medium">
+                Track current progress
+              </label>
+            </div>
+            <Separator className="grow mx-4" />
+          </div>
+
+          {showIntermediate && (
+            <div className="space-y-2 pl-2 border-l-2 border-muted/40 py-2">
+              <label htmlFor="intermediate-date" className="block text-sm font-medium text-muted-foreground">
+                Intermediate Date
+              </label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="intermediate-date"
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal transition-all-200 border-input bg-background hover:bg-accent",
+                      !intermediateDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="w-4 h-4 mr-2" />
+                    {intermediateDate ? formatDate(intermediateDate) : "Select intermediate date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={intermediateDate || undefined}
+                    onSelect={handleIntermediateDateChange}
+                    initialFocus
+                    disabled={(date) => {
+                      if (startDate && date < startDate) return true;
+                      if (endDate && date > endDate) return true;
+                      return false;
+                    }}
+                    className={cn("p-3 pointer-events-auto rounded-md border border-input bg-card shadow-md")}
+                  />
+                </PopoverContent>
+              </Popover>
+              <div className="text-xs text-muted-foreground">
+                Select a date to indicate your current progress in the campaign
+              </div>
+            </div>
+          )}
+          
+          {showIntermediate && (
+            <SpentAmountInput 
+              value={spentAmount}
+              onChange={handleSpentAmountChange}
+              isDisabled={!intermediateDate}
+            />
+          )}
+        </div>
         
         <ResultDisplay
           totalBudget={totalBudget}
