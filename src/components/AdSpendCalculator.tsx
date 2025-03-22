@@ -123,7 +123,7 @@ const AdSpendCalculator: React.FC = () => {
         
         {/* Intermediate date toggle and section */}
         <div className="mt-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col gap-2 mb-4">
             <div className="flex items-center gap-2">
               <Switch 
                 id="intermediate-toggle" 
@@ -134,7 +134,7 @@ const AdSpendCalculator: React.FC = () => {
                 Track current progress
               </label>
             </div>
-            <Separator className="grow mx-4" />
+            <Separator className="w-full" />
           </div>
 
           {showIntermediate && (
