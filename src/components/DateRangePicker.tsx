@@ -133,7 +133,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           variant="outline" 
           size="sm" 
           onClick={handleSelectThisMonth}
-          className="text-xs"
+          className="text-xs bg-blue-100 text-primary hover:bg-blue-200"
         >
           This month
         </Button>
@@ -141,7 +141,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           variant="outline" 
           size="sm" 
           onClick={handleSelectNextMonth}
-          className="text-xs"
+          className="text-xs bg-blue-100 text-primary hover:bg-blue-200"
         >
           Next month
         </Button>
@@ -149,7 +149,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           variant="outline" 
           size="sm" 
           onClick={handleSelectTodayToEOM}
-          className="text-xs"
+          className="text-xs bg-blue-100 text-primary hover:bg-blue-200"
         >
           Today to EOM
         </Button>
