@@ -5,7 +5,6 @@ import BudgetInput from "./BudgetInput";
 import SpentAmountInput from "./SpentAmountInput";
 import ResultDisplay from "./ResultDisplay";
 import CalculatorHeader from "./CalculatorHeader";
-import GoogleAdsIntegration from "./GoogleAdsIntegration";
 import { startOfMonth, endOfMonth, subDays } from "date-fns";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
@@ -23,7 +22,6 @@ const AdSpendCalculator: React.FC = () => {
   const [totalBudget, setTotalBudget] = useState<number>(1000);
   const [spentAmount, setSpentAmount] = useState<number>(0);
   const [showIntermediate, setShowIntermediate] = useState<boolean>(false);
-  const [showGoogleAdsIntegration, setShowGoogleAdsIntegration] = useState<boolean>(false);
 
   // Reset spent amount when intermediate date is removed
   useEffect(() => {
@@ -99,7 +97,6 @@ const AdSpendCalculator: React.FC = () => {
     setShowIntermediate(value);
     if (!value) {
       setIntermediateDate(null);
-      setShowGoogleAdsIntegration(false);
     } else {
       // Set default intermediate date to yesterday when toggle is turned on
       const yesterday = subDays(new Date(), 1);
@@ -112,14 +109,6 @@ const AdSpendCalculator: React.FC = () => {
         setIntermediateDate(yesterday);
       }
     }
-  };
-
-  const handleToggleGoogleAds = (value: boolean) => {
-    setShowGoogleAdsIntegration(value);
-  };
-
-  const handleGoogleAdsCostFetched = (cost: number) => {
-    setSpentAmount(cost);
   };
 
   return (
@@ -201,37 +190,11 @@ const AdSpendCalculator: React.FC = () => {
           )}
           
           {showIntermediate && (
-            <>
-              <div className="mt-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Switch 
-                    id="google-ads-toggle" 
-                    checked={showGoogleAdsIntegration}
-                    onCheckedChange={handleToggleGoogleAds}
-                  />
-                  <label htmlFor="google-ads-toggle" className="text-sm font-medium">
-                    Fetch from Google Ads
-                  </label>
-                </div>
-              </div>
-              
-              {showGoogleAdsIntegration ? (
-                <div className="mt-4">
-                  <GoogleAdsIntegration 
-                    startDate={startDate}
-                    intermediateDate={intermediateDate}
-                    onCostFetched={handleGoogleAdsCostFetched}
-                    isEnabled={showGoogleAdsIntegration}
-                  />
-                </div>
-              ) : (
-                <SpentAmountInput 
-                  value={spentAmount}
-                  onChange={handleSpentAmountChange}
-                  isDisabled={!intermediateDate}
-                />
-              )}
-            </>
+            <SpentAmountInput 
+              value={spentAmount}
+              onChange={handleSpentAmountChange}
+              isDisabled={!intermediateDate}
+            />
           )}
         </div>
         
