@@ -30,17 +30,12 @@ export const calculateAdjustedDailyBudget = (
   intermediateDate: Date,
   spentAmount: number
 ): number => {
-  // Calculate the total campaign days
-  const totalDays = calculateDaysBetween(startDate, endDate);
-  
-  // Calculate days elapsed (from start to intermediate date, inclusive)
-  const daysElapsed = calculateDaysBetween(startDate, intermediateDate);
-  
-  // Calculate days remaining (from intermediate date to end date, not double-counting intermediate date)
-  const daysRemaining = totalDays - daysElapsed + 1; // +1 to avoid double-counting intermediate date
-  
-  // Calculate the remaining budget
+  // Calculate remaining budget
   const remainingBudget = Math.max(0, totalBudget - spentAmount);
+  
+  // Calculate days remaining - from the day AFTER intermediate date to end date (inclusive)
+  const nextDay = addDays(intermediateDate, 1);
+  const daysRemaining = calculateDaysBetween(nextDay, endDate);
   
   // Calculate the adjusted daily budget for remaining days
   return daysRemaining > 0 ? remainingBudget / daysRemaining : 0;

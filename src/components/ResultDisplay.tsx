@@ -39,14 +39,14 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
   // Calculate remaining budget
   const remainingBudget = hasIntermediateData ? totalBudget - spentAmount : totalBudget;
   
-  // Calculate days elapsed and remaining
+  // Calculate days elapsed
   const daysElapsed = (isDataComplete && intermediateDate) 
     ? calculateDaysBetween(startDate, intermediateDate) 
     : 0;
     
-  // Fixed: Don't include the intermediate date in the remaining days calculation
+  // Calculate days remaining - from the day AFTER intermediate date to end date
   const daysRemaining = (isDataComplete && intermediateDate) 
-    ? calculateDaysBetween(intermediateDate, endDate) 
+    ? calculateDaysBetween(new Date(intermediateDate.getTime() + 86400000), endDate) 
     : days;
 
   // Calculate pacing metrics
