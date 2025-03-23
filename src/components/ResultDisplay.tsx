@@ -43,8 +43,10 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
   const daysElapsed = (isDataComplete && intermediateDate) 
     ? calculateDaysBetween(startDate, intermediateDate) 
     : 0;
+    
+  // Fixed: Don't include the intermediate date in the remaining days calculation
   const daysRemaining = (isDataComplete && intermediateDate) 
-    ? days - daysElapsed + 1 // +1 because intermediate date is counted in both elapsed and remaining
+    ? calculateDaysBetween(intermediateDate, endDate) 
     : days;
 
   // Calculate pacing metrics
@@ -154,21 +156,21 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
             </div>
             
             <div className="mt-3 space-y-2">
-              {/* Pacing visualization */}
+              {/* Pacing visualization - Updated to make 100% pacing fill to 50% of the bar */}
               <div className="relative h-6 w-full bg-gray-100 rounded-full overflow-hidden">
                 {/* Middle marker for 100% pacing */}
                 <div className="absolute top-0 bottom-0 left-1/2 w-px bg-gray-300 z-10"></div>
                 
-                {/* Progress bar for pacing */}
+                {/* Progress bar for pacing - Adjusted to make 100% equal to 50% of graph width */}
                 <div 
                   className={`h-full transition-all ${pacing.statusColor}`}
-                  style={{ width: `${Math.min(Math.max(pacing.pacingPercentage, 0), 200)}%` }}
+                  style={{ width: `${Math.min(Math.max(pacing.pacingPercentage / 2, 0), 100)}%` }}
                 ></div>
                 
-                {/* Indicator positions */}
+                {/* Indicator positions - Adjusted for new scale */}
+                <div className="absolute top-0 bottom-0 left-[40%] w-px bg-gray-300 z-10 h-2"></div>
                 <div className="absolute top-0 bottom-0 left-[45%] w-px bg-gray-300 z-10 h-2"></div>
                 <div className="absolute top-0 bottom-0 left-[55%] w-px bg-gray-300 z-10 h-2"></div>
-                <div className="absolute top-0 bottom-0 left-[40%] w-px bg-gray-300 z-10 h-2"></div>
                 <div className="absolute top-0 bottom-0 left-[60%] w-px bg-gray-300 z-10 h-2"></div>
               </div>
               
