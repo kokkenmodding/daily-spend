@@ -12,7 +12,7 @@ const Index: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background text-foreground py-6 px-2 sm:py-12 sm:px-6 lg:px-8">
       <div className="container mx-auto">
         <AdSpendCalculator />
       </div>

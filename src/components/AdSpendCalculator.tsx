@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/utils/dateUtils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const AdSpendCalculator: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date()));
@@ -22,6 +23,7 @@ const AdSpendCalculator: React.FC = () => {
   const [totalBudget, setTotalBudget] = useState<number>(1000);
   const [spentAmount, setSpentAmount] = useState<number>(0);
   const [showIntermediate, setShowIntermediate] = useState<boolean>(false);
+  const isMobile = useIsMobile();
 
   // Reset spent amount when intermediate date is removed
   useEffect(() => {
@@ -116,10 +118,10 @@ const AdSpendCalculator: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl p-6 mx-auto">
+    <div className="w-full max-w-3xl mx-auto">
       <CalculatorHeader />
       
-      <div className="p-8 bg-card border border-border rounded-2xl shadow-sm space-y-8">
+      <div className="p-4 sm:p-6 md:p-8 bg-card border border-border rounded-2xl shadow-sm space-y-6 sm:space-y-8">
         <DateRangePicker
           startDate={startDate}
           endDate={endDate}
@@ -138,7 +140,7 @@ const AdSpendCalculator: React.FC = () => {
         />
         
         {/* Intermediate date toggle and section */}
-        <div className="mt-6">
+        <div className="mt-4 sm:mt-6">
           <div className="flex flex-col gap-2 mb-4">
             <div className="flex items-center gap-2">
               <Switch 
@@ -172,7 +174,7 @@ const AdSpendCalculator: React.FC = () => {
                     {intermediateDate ? formatDate(intermediateDate) : "Select intermediate date"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className={cn("w-auto p-0", isMobile ? "w-[calc(100vw-2rem)]" : "")} align="start">
                   <Calendar
                     mode="single"
                     selected={intermediateDate || undefined}
@@ -211,7 +213,7 @@ const AdSpendCalculator: React.FC = () => {
         />
       </div>
       
-      <div className="mt-8 text-center text-sm text-muted-foreground animate-fade-up" style={{ animationDelay: "200ms" }}>
+      <div className="mt-4 sm:mt-8 text-center text-sm text-muted-foreground animate-fade-up" style={{ animationDelay: "200ms" }}>
         <p>Adjust your campaign dates, budget, and track your spending to optimize your daily ad spend.</p>
       </div>
     </div>
