@@ -18,7 +18,7 @@ import { formatDate } from "@/utils/dateUtils";
 const AdSpendCalculator: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState<Date | null>(endOfMonth(new Date()));
-  const [intermediateDate, setIntermediateDate] = useState<Date | null>(subDays(new Date(), 1));
+  const [intermediateDate, setIntermediateDate] = useState<Date | null>(null);
   const [totalBudget, setTotalBudget] = useState<number>(1000);
   const [spentAmount, setSpentAmount] = useState<number>(0);
   const [showIntermediate, setShowIntermediate] = useState<boolean>(false);
@@ -98,14 +98,18 @@ const AdSpendCalculator: React.FC = () => {
     if (!value) {
       setIntermediateDate(null);
     } else {
-      // Set default intermediate date to yesterday when toggle is turned on
+      // Always set to yesterday when toggle is turned on
       const yesterday = subDays(new Date(), 1);
-      if (!intermediateDate || 
-          (startDate && yesterday < startDate) ||
-          (endDate && yesterday > endDate)) {
-        // If yesterday is outside the selected date range, use the start date
+      
+      // Check if yesterday is within the selected date range
+      if (startDate && yesterday < startDate) {
+        // If yesterday is before the start date, use the start date
         setIntermediateDate(startDate);
+      } else if (endDate && yesterday > endDate) {
+        // If yesterday is after the end date, use the end date
+        setIntermediateDate(endDate);
       } else {
+        // Yesterday is within the date range, use it
         setIntermediateDate(yesterday);
       }
     }
