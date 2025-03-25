@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   calculateDaysBetween, 
@@ -9,6 +8,7 @@ import {
 import { CalendarDays, Calendar, TrendingUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ResultDisplayProps {
   totalBudget: number;
@@ -25,6 +25,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
   intermediateDate,
   spentAmount,
 }) => {
+  const isMobile = useIsMobile();
   const isDataComplete = startDate && endDate && totalBudget > 0;
   const hasIntermediateData = intermediateDate && spentAmount > 0;
   
@@ -140,7 +141,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
           </div>
         </div>
         
-        {/* Pacing Graph */}
+        {/* Pacing Graph - Modified for better mobile responsiveness */}
         {isDataComplete && hasIntermediateData && pacing && (
           <div className="mt-6 p-4 bg-accent/30 rounded-xl">
             <div className="flex items-center justify-between mb-2">
@@ -156,7 +157,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
             </div>
             
             <div className="mt-3 space-y-2">
-              {/* Pacing visualization - Updated to make 100% pacing fill to 50% of the bar */}
+              {/* Pacing visualization - Updated for better mobile view */}
               <div className="relative h-6 w-full bg-gray-100 rounded-full overflow-hidden">
                 {/* Middle marker for 100% pacing */}
                 <div className="absolute top-0 bottom-0 left-1/2 w-px bg-gray-300 z-10"></div>
@@ -167,17 +168,27 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
                   style={{ width: `${Math.min(Math.max(pacing.pacingPercentage / 2, 0), 100)}%` }}
                 ></div>
                 
-                {/* Indicator positions - Adjusted for new scale */}
-                <div className="absolute top-0 bottom-0 left-[40%] w-px bg-gray-300 z-10 h-2"></div>
-                <div className="absolute top-0 bottom-0 left-[45%] w-px bg-gray-300 z-10 h-2"></div>
-                <div className="absolute top-0 bottom-0 left-[55%] w-px bg-gray-300 z-10 h-2"></div>
-                <div className="absolute top-0 bottom-0 left-[60%] w-px bg-gray-300 z-10 h-2"></div>
+                {/* Indicator positions - Only visible on non-mobile */}
+                {!isMobile && (
+                  <>
+                    <div className="absolute top-0 bottom-0 left-[40%] w-px bg-gray-300 z-10 h-2"></div>
+                    <div className="absolute top-0 bottom-0 left-[45%] w-px bg-gray-300 z-10 h-2"></div>
+                    <div className="absolute top-0 bottom-0 left-[55%] w-px bg-gray-300 z-10 h-2"></div>
+                    <div className="absolute top-0 bottom-0 left-[60%] w-px bg-gray-300 z-10 h-2"></div>
+                  </>
+                )}
               </div>
               
-              <div className="flex justify-between text-xs text-muted-foreground">
+              {/* Responsive labels for pacing status */}
+              <div className={`flex justify-between text-xs text-muted-foreground ${isMobile ? 'hidden sm:flex' : ''}`}>
                 <span>Underspending</span>
                 <span>On Track</span>
                 <span>Overspending</span>
+              </div>
+              
+              {/* Simplified mobile-only label */}
+              <div className={`text-center text-xs text-muted-foreground sm:hidden`}>
+                <span>{pacing.status.charAt(0).toUpperCase() + pacing.status.slice(1)}</span>
               </div>
               
               <div className="pt-2 text-sm">
